@@ -25,6 +25,14 @@ export default function Login() {
           value={password}
           onChange={(event)=>setPassword(event.target.value)}
         />
+        <TextInput
+          type="text"
+          placeholder="****"
+          name="Password"
+          icon={FcAddressBook}
+          value={password}
+          onChange={(event)=>setPassword(event.target.value)}
+        />
       </form>
     </div>
   );
