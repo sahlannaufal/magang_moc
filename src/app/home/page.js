@@ -1,146 +1,188 @@
 "use client";
 import { useState } from "react";
 import { Button, Checkbox, Label, TextInput } from 'flowbite-react';
-import NavbarHome_T from "@/components/template/NavbarHome_T";
+import Navbar_T from '@/components/template/Navbar_T';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import Image from 'next/image';
-import { Accordion } from 'flowbite-react';
+
 
 
 export default function Register() {
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('');
-    const [passwordVisible, setPasswordVisible] = useState(false);
 
-    const togglePasswordVisibility = () => {
-        setPasswordVisible(!passwordVisible);
-    };
-  return (
-    <>
-  <NavbarHome_T className='' />
-  <div className="bg-black h-0.5"></div>
-  <div className="flex flex-col items-center p-10">
-    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-center">Buat Portofolio mu dengan mudah!</h2>
-    <h1 className="text-s md:text-s lg:text-s mb-4 text-center">Buat dan bagikan portofolio dengan mudah berkat Portoin.</h1>
-      <Button
-        type="submit"
-        style={{ backgroundColor: "#00384F", color: "white", width: "100%" }}
-        className="hover:bg-blue-700"
-      >
-        Daftar Akun
-      </Button>
-      <div className='w-full mt-10'>
-                    <Image src='/asset/homebanner.svg' alt='lintang' height={900} width={500} className='object-cover'/>
-      </div>
+    const [formData, setFormData] = useState({
+      name: '',
+      email: '',
+      noHp: '',
+      provinsi: '',
+      kabupatenKota: '',
+      kecamatan: '',
+      password1: '',
+    });
+
+        const [password, setPassword] = useState('');
+        const [passwordVisible, setPasswordVisible] = useState(false);     
+        const [passwordError, setPasswordError] = useState('');
+        const [formError, setFormError] = useState('');
+
+        const handleSubmit = async (e) => {
+          e.preventDefault();
+
+          // Validasi semua formulir terisi
+          const isFormValid = Object.values(formData).every(value => value.trim() !== '');
+          if (!isFormValid) {
+            setFormError('Please fill in all fields.');
+            return;
+          }
+      
+           // Validasi password sebelum submit
+           if (passwordError) {
+            setFormError('Please fix the errors in the form before proceeding.');
+            console.error('Password must be at least 8 characters long and contain at least one letter and one number.');
+            return; 
+          }
+
+          console.log('Form Data:', formData);
+      
+          if (formData.noHp) {
+            await generateWhatsAppLink(formData.noHp);
+          }
+      
+          await sendOtp();
+        };
+
+      const handleChange = (e, field) => {
+        const value = e.target.value;
+        setFormData({
+          ...formData,
+          [field]: value,
+        });
+
+          if (field === 'password1') {
+            validatePassword(value);
+          }
+      };
+
+      const validatePassword = (password) => {
+        // Minimum 8 karakter, minimal satu huruf, dan minimal satu angka
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
     
-  </div>
-  
-  <div className="flex flex-col items-center p-10 bg-[#00384F]">
-    <h2 className="text-3xl md:text-4xl lg:text-5xl mb-4 text-center text-white">Buat Portofolio mu dengan mudah!</h2>
-    <h1 className="text-s md:text-s lg:text-s mb-4 text-center text-white">Buat dan bagikan portofolio dengan mudah berkat Portoin.</h1>
-      <Button
-        type="submit"
-        style={{ backgroundColor: "#001E21", color: "white", width: "100%" }}
-        className="hover:bg-blue-700"
-      >
-        Buat Portofolio Gratis
-      </Button>
-      <div className='w-full mt-10'>
-                    <Image src='/asset/homebanner2.svg' alt='lintang' height={900} width={500} className='object-cover'/>
-      </div>
+        if (!passwordRegex.test(password)) {
+          setPasswordError('Password must be at least 8 characters long and contain at least one letter and one number.');
+        } else {
+          setPasswordError('');
+        }
+      };
+
+      const togglePasswordVisibility = () => {
+          setPasswordVisible(!passwordVisible);
+      };
+
+
+  const sendOtp = async () => {
+    const otpApiUrl = 'https://wa.ikutan.my.id/send';
     
-  </div>
+    try {
+      const response = await fetch(otpApiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phoneNumber: formData.noHp,
+        }),
+      });
 
-  <div className="flex flex-col items-center p-10">
-    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-center">Miliki website portofolio pribadi</h2>
-    <h1 className="text-s md:text-s lg:text-s mb-4 text-center">Setelah membuat portofolio, bagikan portofolio online melalui link yang disediakan.</h1>
-      <Button
-        type="submit"
-        style={{ backgroundColor: "#001E21", color: "white", width: "100%" }}
-        className="hover:bg-blue-700"
-      >
-        Buat Portofolio Gratis
-      </Button>
-      <div className='w-full mt-10'>
-                    <Image src='/asset/homebanner3.svg' alt='lintang' height={900} width={500} className='object-cover'/>
-      </div>
-    <h2 className="text-xl md:text-xl lg:text-xl font-bold mb-4 mt-7 text-center ">Pertanyaan sering ditanyakan ?</h2>
-    {/* {/* <form className="flex flex-col max-w-md gap-4 w-full flex-grow">
-      <div className="rounded-md">
-        <TextInput id="name" type="name" placeholder="Name" required />
-      </div>
+      if (response.ok) {
+        console.log('OTP sent successfully.');
+      } else {
+        console.error('Failed to send OTP.');
+      }
+    } catch (error) {
+      console.error('Error occurred during the OTP API call:', error);
+    }
+  };
 
-      <div className="rounded-md">
-        <TextInput id="email1" type="email" placeholder="Email" required />
-      </div>
-    </form> */}
-    <Accordion>
-    <Accordion.Panel className="mb-4">
-        <Accordion.Title>Apakah semua template yang disediakan gratis?</Accordion.Title>
-        <Accordion.Content>
-          <p className="mb-2 text-gray-500 dark:text-gray-400">
-            Flowbite is first conceptualized and designed using the Figma software so everything you see in the library
-            has a design equivalent in our Figma file.
-          </p>
-          <p className="text-gray-500 dark:text-gray-400">
-            Check out the
-            <a href="https://flowbite.com/figma/" className="text-cyan-600 hover:underline dark:text-cyan-500">
-              Figma design system
-            </a>
-            based on the utility classes from Tailwind CSS and components from Flowbite.
-          </p>
-        </Accordion.Content>
-      </Accordion.Panel>
+  const generateWhatsAppLink = async (phone) => {
+    const token = 'XjhGkWLRp5sqivC0yaT6';
+    const apiUrl = `https://wa.ikutan.my.id/send/${token}/${phone}`;
 
-      <Accordion.Panel className="mb-4">
-        <Accordion.Title>Berapa lama link portofolio bisa digunakan?</Accordion.Title>
-        <Accordion.Content>
-          <p className="mb-2 text-gray-500 dark:text-gray-400">
-            Flowbite is an open-source library of interactive components built on top of Tailwind CSS including buttons,
-            dropdowns, modals, navbars, and more.
-          </p>
-        </Accordion.Content>
-      </Accordion.Panel>
-    </Accordion>
-  </div>
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+      });
 
-  <div className="flex flex-col md:flex-row p-10 min-h-screen bg-[#00384F]">
-  <h2 className="text-white text-4xl font-normal font-['Homenaje'] leading-[30px] mb-4">Portoin.</h2>
-  <h1 className="text-s md:text-s lg:text-s mb-4 text-white">Portoin is an automatic easily and quickly online portfolio generator application website. There are various kinds of portfolio templates that you can use for free.</h1>
-
-  <div className="md:flex justify-between items-start gap-2">
-    {/* Company Section */}
-    <div className="w-[164px] md:flex md:flex-col justify-center items-start gap-1">
-      <div className="text-white text-s font-bold font-['Epilogue'] leading-tight tracking-tight">Company</div>
-      <div className="text-white text-sm font-medium font-['Epilogue'] leading-normal tracking-tight">About us<br />Privacy Policy<br />Terms & Condition<br />Disclaimer</div>
-    </div>
-
-    {/* Service Section */}
-    <div className="md:flex md:flex-col justify-between items-start gap-2">
-      <div className="text-white text-sm font-bold font-['Epilogue'] leading-tight tracking-tight">Service</div>
-      <div className="text-white text-xs font-medium font-['Epilogue'] leading-normal tracking-tight">Help<br />Contact Us</div>
-    </div>
-  </div>
-  <div className="bg-white h-0.5 mt-4"></div>
-  <h2 className="mt-8 text-white font-bold">Follow Us</h2>
-
-  {/* Flex container for Twitter images */}
-  <div className="flex mt-4">
-    <div className="pr-4">
-      <Image src='/asset/twitterx.svg' alt='Twitter' height={60} width={60} />
-    </div>
-    <div className='w-1/2'>
-      <Image src='/asset/twitterx.svg' alt='Twitter' height={60} width={60} />
-    </div>
-  </div>
-
-  {/* Footer */}
-<footer className="mt-auto text-center text-white text-sm">
-  LinTech. © 2023
-</footer>
-</div>
+      if (response.ok) {
+        console.log('WhatsApp link generated successfully.');
+      } else {
+        console.error('Failed to generate WhatsApp link. Server returned:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('Error occurred during the WhatsApp link API call:', error.message);
+    }
+  };
 
 
-  </>
-  );
-}
+
+        
+
+    return (
+      <>
+        <Navbar_T className='' />
+        <div className="bg-primary h-[1px]"></div>
+        <div className="flex flex-col items-center p-10">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">Welcome</h2>
+            <form className="flex flex-col max-w-md gap-4 w-full flex-grow" onSubmit={handleSubmit}>
+                {formError && (
+                  <p className="text-red-500 text-sm mb-4">{formError}</p>
+                )}
+              <div className="flex flex-col rounded-md gap-y-3">
+                <TextInput id="name" type="name" placeholder="Name" onChange={(e) => handleChange(e, 'name')} required />
+                <TextInput id="email" type="email" placeholder="Email" onChange={(e) => handleChange(e, 'email')} required />
+                <TextInput id="noHp" type="string" placeholder="No HP" onChange={(e) => handleChange(e, 'noHp')} required />
+                <TextInput id="provinsi" type="string" placeholder="Provinsi" onChange={(e) => handleChange(e, 'provinsi')} required />
+                <TextInput id="kabupatenKota" type="string" placeholder="Kabupaten/Kota" onChange={(e) => handleChange(e, 'kabupatenKota')}required />
+                <TextInput id="kecamatan" type="string" placeholder="Kecamatan" onChange={(e) => handleChange(e, 'kecamatan')} required />
+                  <div className="relative">
+                    <TextInput
+                      id="password1"
+                      type={passwordVisible ? 'text' : 'password'}
+                      placeholder="Password"
+                      onChange={(e) => handleChange(e, 'password1')}
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="pr-2 absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      onClick={togglePasswordVisibility}
+                    >
+                      {passwordVisible ? <FaEye /> : <FaEyeSlash />}
+                    </button>
+                </div>
+                {passwordError && (
+                  <p className="text-red-500 text-xs">{passwordError}</p>
+                )}
+              </div>
+
+              <Button
+                type="submit"
+                style={{ backgroundColor: "#00384F", color: "white", width: "100%" }}
+                className={`hover:bg-blue-700 ${passwordError || formError ? 'cursor-not-allowed opacity-50' : ''}`}
+                disabled={passwordError || formError}
+                href={passwordError || formError ? undefined : "/verifikasi"}
+              >
+                Register
+              </Button>
+              <p className="mt-2 text-gray-500 text-sm text-center">
+                    Have an account? <a href="#" className="font-bold text-black">Log In</a>
+              </p>
+              <p className="mt-2 text-xs text-center text-gray-500">
+                By continuing, you agree to MOC's <a href="#" className="font-bold text-black">Terms and Conditions</a> and acknowledge you’ve read our <a href="#" className="font-bold text-black">Privacy Policy</a>.
+              </p>
+            </form>
+        </div>
+        {/* Footer */}
+        <footer className="text-center text-gray-500 text-sm mt-auto">
+        MagangMOC. © 2023
+        </footer>
+      </>
+    );
+  }

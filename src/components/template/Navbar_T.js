@@ -4,7 +4,7 @@ function Navbar_T() {
   return (
     <Navbar className='flex max-w-full flex-col py-6'>
       <Navbar.Brand>
-        <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">LinTech.</span>
+        <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">MOC.</span>
       </Navbar.Brand>
       <Navbar.Toggle />
       <Navbar.Collapse>
