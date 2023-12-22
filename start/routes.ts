@@ -21,15 +21,10 @@
 
 import Route from '@ioc:Adonis/Core/Route'  
 
-Route.group(() => {
-    Route.resource('/location', 'LocationsController')
-    Route.post('/locationByLatLong', 'LocationsController.show')
-    Route.resource('/history', 'HistorysController')
-    Route.resource('/penanganan', 'PenanganansController')
-}).middleware('auth')
-
-// Route.resource('/location', 'LocationsController')
-// Route.resource('/history', 'HistorysController')
-// Route.resource('/penanganan', 'PenanganansController')
 Route.post('/register', 'AuthController.register')
-Route.post('/login', 'AuthController.login')
+// Route.post('/login', 'AuthController.login')
+
+// Route.group(() => {
+//   Route.post('/register', 'AuthController.register');
+//   Route.get('/send/:token/:phone', 'AuthController.sendOtp');
+// }).prefix('api/v1');

@@ -1,16 +1,33 @@
 import { DateTime } from 'luxon'
-import { BaseModel, HasMany, column, hasMany } from '@ioc:Adonis/Lucid/Orm'
-import Location from './Location'
+import { BaseModel, column} from '@ioc:Adonis/Lucid/Orm'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
   @column()
-  public email: string
+  public name: string
+
+  @column()
+  public email: 
+  
+  @column()
+  public phone: string
+
+  @column()
+  public province: string
+
+  @column()
+  public city: string
+
+  @column()
+  public district: string
 
   @column({serializeAs: null})
   public password: string
+
+  @column()
+  public otp: string
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
@@ -18,6 +35,4 @@ export default class User extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
-  @hasMany(() => Location)
-  public locations: HasMany<typeof Location>
 }
