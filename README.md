@@ -35,3 +35,6 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 # frontend
+![1](https://github.com/sahlannaufal/magang_moc/assets/89249622/b6dbde15-bbfb-4b9f-86f7-d92524e12c65)
+![12](https://github.com/sahlannaufal/magang_moc/assets/89249622/519a4a0f-2374-40ef-abb3-cc249cf27f45)
+
